@@ -1,0 +1,54 @@
+﻿@using Database
+@using Models
+@using Logic
+@inject InMemoryContext dbInMemory
+
+@page "/inMemory"
+<h3>InMemoryDb</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @nameof(Book.Title)
+            </th>
+            <th>
+                @nameof(Book.Author)
+            </th>
+            <th>
+                @nameof(Book.BorrowDate)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in BookList)
+        {
+            <tr>
+                <th>
+                    @book.Title
+                </th>
+                <th>
+                    @book.Author
+                </th>
+                @if (book.BorrowDate != null)
+                {
+                    <th>@book.BorrowDate</th>
+                }
+                else
+                {
+                    <th>no borrow date</th>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    public bool things;
+    public List<Book> BookList = new List<Book>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        BookList = InternalDb.GetBooks(dbInMemory);
+    }
+}
