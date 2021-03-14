@@ -1,0 +1,35 @@
+﻿@page "/TableEdit"
+<h3>TableEdit</h3>
+
+<input class="form-control form" @oninput="TakeHeadInputValue" value="@HeadInputValue"/>
+<br />
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            @for (int x = 0; x < Table.GetLength(0); x++)
+            {
+                <th>@x</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (int x = 0; x < Table.GetLength(0); x++)
+        {
+            var localVariableX = x;
+        <tr>
+            @for (int y = 0; y < Table.GetLength(1); y++)
+            {
+                var localVariableY = y;
+                <td>
+                    <input id="cell-@y-@x" value="@Table[localVariableX,localVariableY]" @oninput="TakeTableInput" 
+                           @onclick="()=>ChangeValueBindForHeadInput(localVariableX,localVariableY)"/>
+                </td>
+            }
+        </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+}

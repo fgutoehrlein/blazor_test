@@ -42,13 +42,56 @@
     </tbody>
 </table>
 
+<button class="btn btn-primary" @onclick="()=>AddNewBookModal.Open()">add new book</button>
+<BlazorServerSide.Pages.Components.ModalComponent @ref="AddNewBookModal">
+    <Title>
+        borrow new book here
+    </Title>
+    <Body>
+        <p>Title</p>
+        <input class="form-control" @bind="NewBookTitle" placeholder="input title name here"/>
+        <br />
+        <p>Author</p>
+        <input class="form-control" @bind="NewBookAuthor" placeholder="input author name here"/>
+        <br />
+        <button class="btn btn-primary" @onclick="()=>AddNewlyBorrowedBookToDb()">save</button>
+    </Body>
+</BlazorServerSide.Pages.Components.ModalComponent>
 @code {
 
     public bool things;
     public List<Book> BookList = new List<Book>();
+    private Pages.Components.ModalComponent AddNewBookModal = new Components.ModalComponent();
+
+    public string NewBookTitle;
+    public string NewBookAuthor;
 
     protected override async Task OnInitializedAsync()
     {
-        BookList = InternalDb.GetBooks(dbInMemory);
+        BookList = await InternalDb.LoadBooks(dbInMemory);
+    }
+    public async Task AddNewlyBorrowedBookToDb()
+    {
+        if(string.IsNullOrEmpty(NewBookTitle) || string.IsNullOrEmpty(NewBookAuthor))
+        {
+            return;
+        }
+        var newBook = new Book();
+
+        newBook.Title = NewBookTitle;
+        newBook.Author = NewBookAuthor;
+        newBook.BorrowDate = DateTime.UtcNow;
+
+        await dbInMemory.Books.AddAsync(newBook);
+        await dbInMemory.SaveChangesAsync();
+        BookList = await InternalDb.LoadBooks(dbInMemory);
+
+        SetNewBookParametersToNull();
+    }
+    public void SetNewBookParametersToNull()
+    {
+        AddNewBookModal.Close();
+        NewBookAuthor = null;
+        NewBookAuthor = null;
     }
 }
