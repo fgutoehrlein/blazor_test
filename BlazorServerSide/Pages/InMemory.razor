@@ -2,6 +2,7 @@
 @using Models
 @using Logic
 @inject InMemoryContext dbInMemory
+@inject InternalDbService internalDbService
 
 @page "/inMemory"
 <h3>InMemoryDb</h3>
@@ -68,7 +69,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        BookList = await InternalDb.LoadBooks(dbInMemory);
+        BookList = await internalDbService.LoadBooks();
     }
     public async Task AddNewlyBorrowedBookToDb()
     {
@@ -76,15 +77,8 @@
         {
             return;
         }
-        var newBook = new Book();
-
-        newBook.Title = NewBookTitle;
-        newBook.Author = NewBookAuthor;
-        newBook.BorrowDate = DateTime.UtcNow;
-
-        await dbInMemory.Books.AddAsync(newBook);
-        await dbInMemory.SaveChangesAsync();
-        BookList = await InternalDb.LoadBooks(dbInMemory);
+        await internalDbService.InsertNewBook(NewBookTitle, NewBookAuthor);
+        BookList = await internalDbService.LoadBooks();
 
         SetNewBookParametersToNull();
     }

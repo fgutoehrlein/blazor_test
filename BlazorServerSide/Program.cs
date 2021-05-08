@@ -25,7 +25,7 @@ namespace BlazorServerSide
             {
                 var services = scope.ServiceProvider;
                 var dbContext = services.GetRequiredService<InMemoryContext>();
-                _ = Logic.InternalDb.LoadBook(dbContext);
+                _ = Logic.InternalDbService.SeedBooks(dbContext);
             }
 
             host.Run();
